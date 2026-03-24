@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数学文献PDF翻译系统</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>数学文献PDF翻译系统</h1>
+      <p class="subtitle">德语 / 法语 / 英语数学文献 → 中文网页（LaTeX公式实时渲染）</p>
+      <p class="subtitle" style="font-size:0.8em;color:#888;">Claude + GPT 双模型并行翻译 · Claude 交叉审核合并</p>
+    </header>
+
+    <!-- Upload Section -->
+    <section id="upload-section" class="card">
+      <div id="drop-zone" class="drop-zone">
+        <div class="drop-icon">📄</div>
+        <p>拖拽PDF文件到此处，或</p>
+        <label for="file-input" class="btn btn-primary">选择文件</label>
+        <input type="file" id="file-input" accept=".pdf" hidden>
+        <p class="hint">最大500MB · 支持扫描件 · 无需安装任何软件</p>
+      </div>
+
+      <div class="options">
+        <div class="option-group">
+          <label for="source-lang">源语言</label>
+          <select id="source-lang">
+            <option value="de">德语 (Deutsch)</option>
+            <option value="fr">法语 (Français)</option>
+            <option value="en" selected>英语 (English)</option>
+          </select>
+        </div>
+        <div class="option-group">
+          <label for="target-lang">目标语言</label>
+          <select id="target-lang">
+            <option value="zh" selected>中文</option>
+            <option value="en">英语</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="selected-file" class="selected-file hidden">
+        <span id="file-name"></span>
+        <span id="file-size"></span>
+      </div>
+
+      <button id="upload-btn" class="btn btn-success" disabled>开始翻译</button>
+    </section>
+
+    <!-- Progress Section -->
+    <section id="progress-section" class="card hidden">
+      <div class="section-header">
+        <h2>翻译进度</h2>
+        <button id="new-task-btn" class="btn-link">+ 新任务</button>
+      </div>
+      <p id="progress-filename" class="progress-filename"></p>
+      <div class="progress-bar-wrap">
+        <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+      </div>
+      <p id="progress-pct" class="progress-pct">0%</p>
+      <p id="status-label" class="status-label">等待处理…</p>
+      <p id="chunk-info" class="chunk-info"></p>
+      <button id="cancel-btn" class="btn btn-danger">取消任务</button>
+    </section>
+
+    <!-- Result Section -->
+    <section id="result-section" class="card hidden">
+      <div class="section-header">
+        <h2>✅ 翻译完成</h2>
+        <button id="new-task-btn2" class="btn-link">+ 新任务</button>
+      </div>
+      <p class="result-desc">数学公式由 MathJax 实时渲染。PDF需要系统已安装 XeLaTeX。</p>
+      <div class="result-buttons">
+        <a id="preview-btn" class="btn btn-primary" href="#" target="_blank">浏览器预览</a>
+        <a id="download-html-btn" class="btn btn-secondary" href="#">下载 HTML</a>
+        <a id="download-md-btn" class="btn btn-secondary" href="#">下载 Markdown</a>
+        <a id="download-tex-btn" class="btn btn-secondary" href="#">下载 .tex</a>
+        <a id="download-pdf-btn" class="btn btn-secondary" href="#">下载 PDF</a>
+      </div>
+    </section>
+
+    <!-- Error Section -->
+    <section id="error-section" class="card hidden error-card">
+      <div class="section-header">
+        <h2>处理出错</h2>
+        <button id="new-task-btn3" class="btn-link">+ 新任务</button>
+      </div>
+      <p id="error-summary" class="error-summary"></p>
+      <details id="error-details" class="error-details hidden">
+        <summary>查看完整错误日志</summary>
+        <pre id="error-detail-pre"></pre>
+      </details>
+      <button id="retry-btn" class="btn btn-primary">重新上传</button>
+    </section>
+
+    <!-- History Section -->
+    <section class="card">
+      <div class="section-header">
+        <h2>历史任务</h2>
+        <button id="refresh-history-btn" class="btn-link">刷新</button>
+      </div>
+      <div id="history-list" class="history-list">
+        <p class="history-empty">暂无历史任务</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

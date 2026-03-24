@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-multipart
+PyMuPDF
+anthropic
+openai
+aiofiles
+aiosqlite
+python-dotenv

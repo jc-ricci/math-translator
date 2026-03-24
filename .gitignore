@@ -1,0 +1,25 @@
+# 环境变量（含API Key，绝不上传）
+.env
+
+# 存储目录（上传文件、翻译结果、数据库）
+storage/
+
+# 翻译任务输出（个人文件）
+翻译任务/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
