@@ -238,6 +238,8 @@
     } catch (_) {}
   }
 
+  const FILE_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+
   function renderHistory(jobs) {
     if (!jobs.length) {
       historyList.innerHTML = '<p class="history-empty">暂无历史任务</p>';
@@ -247,9 +249,8 @@
       const isActive = !['done', 'error', 'cancelled'].includes(job.status);
       const statusClass = job.status === 'done' ? 'status-done'
         : job.status === 'error' ? 'status-error' : 'status-active';
-      const displayName = job.filename
-        ? job.filename
-        : `${job.source_lang_label} → ${job.target_lang === 'zh' ? '中文' : '英语'}`;
+      const name = job.filename || `${job.source_lang_label} → ${job.target_lang === 'zh' ? '中文' : '英语'}`;
+      const sub  = `${job.source_lang_label} → ${job.target_lang === 'zh' ? '中文' : '英语'} · ${formatDate(job.created_at)} · ${job.job_id.slice(0, 8)}`;
 
       let actions = '';
       if (job.status === 'done') {
@@ -258,25 +259,26 @@
           <a href="/api/download/${job.job_id}/html" class="btn-sm btn-secondary">HTML</a>
           <a href="/api/download/${job.job_id}/md" class="btn-sm btn-secondary">MD</a>
           <a href="/api/download/${job.job_id}/tex" class="btn-sm btn-secondary">.tex</a>
-          ${job.has_pdf ? `<a href="/api/download/${job.job_id}/pdf" class="btn-sm btn-secondary">PDF</a>` : ''}
-        `;
+          ${job.has_pdf ? `<a href="/api/download/${job.job_id}/pdf" class="btn-sm btn-secondary">PDF</a>` : ''}`;
       } else if (job.status === 'error') {
         actions = `<button class="btn-sm btn-secondary" onclick="resumeJob('${job.job_id}')">查看错误</button>`;
       } else if (job.status === 'cancelled') {
-        actions = `<span style="color:#999;font-size:0.82rem">已取消</span>`;
+        actions = '';
       } else {
-        actions = `<button class="btn-sm btn-secondary" onclick="resumeJob('${job.job_id}')">查看进度</button>`;
+        actions = `<button class="btn-sm btn-primary" onclick="resumeJob('${job.job_id}')">查看进度</button>`;
       }
 
       return `
         <div class="history-item ${isActive ? 'history-active' : ''}">
-          <div class="history-meta">
-            <span class="history-lang">${displayName}</span>
-            <span class="history-time">${formatDate(job.created_at)}</span>
-            <span class="history-status ${statusClass}">${job.status_label}</span>
+          <div class="history-file-icon">${FILE_ICON}</div>
+          <div class="history-info">
+            <div class="history-name">${name}</div>
+            <div class="history-sub">${sub}</div>
           </div>
-          <div class="history-id">${job.job_id.slice(0, 8)}…</div>
-          <div class="history-actions">${actions}</div>
+          <div class="history-right">
+            <span class="history-status ${statusClass}">${job.status_label}</span>
+            <div class="history-actions">${actions}</div>
+          </div>
         </div>`;
     }).join('');
   }

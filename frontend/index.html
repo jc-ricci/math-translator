@@ -3,86 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>数学文献PDF翻译系统</title>
+  <title>数学文献翻译</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <div class="container">
+
     <header>
-      <h1>数学文献PDF翻译系统</h1>
-      <p class="subtitle">德语 / 法语 / 英语数学文献 → 中文网页（LaTeX公式实时渲染）</p>
-      <p class="subtitle" style="font-size:0.8em;color:#888;">Claude + GPT 双模型并行翻译 · Claude 交叉审核合并</p>
+      <div class="header-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Claude + GPT-4o 双模型并行 · 交叉审核
+      </div>
+      <h1>数学文献 PDF 翻译</h1>
+      <p class="subtitle">德语 · 法语 · 英语 → 中文 &nbsp;|&nbsp; LaTeX 公式完整保留 · MathJax 实时渲染</p>
     </header>
 
-    <!-- Upload Section -->
+    <!-- Upload -->
     <section id="upload-section" class="card">
       <div id="drop-zone" class="drop-zone">
-        <div class="drop-icon">📄</div>
-        <p>拖拽PDF文件到此处，或</p>
-        <label for="file-input" class="btn btn-primary">选择文件</label>
+        <div class="drop-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <p class="drop-title">拖拽 PDF 文件到此处</p>
+        <p class="drop-sub">或点击选择文件</p>
         <input type="file" id="file-input" accept=".pdf" hidden>
-        <p class="hint">最大500MB · 支持扫描件 · 无需安装任何软件</p>
+        <p class="hint">支持文字型和扫描件 · 最大 500 MB</p>
       </div>
 
       <div class="options">
         <div class="option-group">
           <label for="source-lang">源语言</label>
           <select id="source-lang">
-            <option value="de">德语 (Deutsch)</option>
-            <option value="fr">法语 (Français)</option>
-            <option value="en" selected>英语 (English)</option>
+            <option value="de">🇩🇪 德语 (Deutsch)</option>
+            <option value="fr">🇫🇷 法语 (Français)</option>
+            <option value="en" selected>🇬🇧 英语 (English)</option>
           </select>
         </div>
         <div class="option-group">
           <label for="target-lang">目标语言</label>
           <select id="target-lang">
-            <option value="zh" selected>中文</option>
-            <option value="en">英语</option>
+            <option value="zh" selected>🇨🇳 中文</option>
+            <option value="en">🇬🇧 英语</option>
           </select>
         </div>
       </div>
 
       <div id="selected-file" class="selected-file hidden">
+        <span class="file-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </span>
         <span id="file-name"></span>
         <span id="file-size"></span>
       </div>
 
-      <button id="upload-btn" class="btn btn-success" disabled>开始翻译</button>
+      <button id="upload-btn" class="btn btn-success" disabled>
+        开始翻译
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
     </section>
 
-    <!-- Progress Section -->
+    <!-- Progress -->
     <section id="progress-section" class="card hidden">
       <div class="section-header">
-        <h2>翻译进度</h2>
+        <h2>翻译中</h2>
         <button id="new-task-btn" class="btn-link">+ 新任务</button>
       </div>
       <p id="progress-filename" class="progress-filename"></p>
-      <div class="progress-bar-wrap">
-        <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+        </div>
+        <span id="progress-pct" class="progress-pct">0%</span>
       </div>
-      <p id="progress-pct" class="progress-pct">0%</p>
       <p id="status-label" class="status-label">等待处理…</p>
       <p id="chunk-info" class="chunk-info"></p>
       <button id="cancel-btn" class="btn btn-danger">取消任务</button>
     </section>
 
-    <!-- Result Section -->
-    <section id="result-section" class="card hidden">
+    <!-- Result -->
+    <section id="result-section" class="card hidden result-card">
       <div class="section-header">
-        <h2>✅ 翻译完成</h2>
+        <h2>翻译完成</h2>
         <button id="new-task-btn2" class="btn-link">+ 新任务</button>
       </div>
-      <p class="result-desc">数学公式由 MathJax 实时渲染。PDF需要系统已安装 XeLaTeX。</p>
+      <p class="result-desc">数学公式由 MathJax 实时渲染 · PDF 需本地已安装 XeLaTeX</p>
       <div class="result-buttons">
-        <a id="preview-btn" class="btn btn-primary" href="#" target="_blank">浏览器预览</a>
-        <a id="download-html-btn" class="btn btn-secondary" href="#">下载 HTML</a>
-        <a id="download-md-btn" class="btn btn-secondary" href="#">下载 Markdown</a>
-        <a id="download-tex-btn" class="btn btn-secondary" href="#">下载 .tex</a>
-        <a id="download-pdf-btn" class="btn btn-secondary" href="#">下载 PDF</a>
+        <a id="preview-btn" class="btn btn-primary" href="#" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          预览
+        </a>
+        <a id="download-html-btn" class="btn btn-secondary" href="#">HTML</a>
+        <a id="download-md-btn"   class="btn btn-secondary" href="#">Markdown</a>
+        <a id="download-tex-btn"  class="btn btn-secondary" href=".">.tex</a>
+        <a id="download-pdf-btn"  class="btn btn-secondary" href="#">PDF</a>
       </div>
     </section>
 
-    <!-- Error Section -->
+    <!-- Error -->
     <section id="error-section" class="card hidden error-card">
       <div class="section-header">
         <h2>处理出错</h2>
@@ -96,7 +120,7 @@
       <button id="retry-btn" class="btn btn-primary">重新上传</button>
     </section>
 
-    <!-- History Section -->
+    <!-- History -->
     <section class="card">
       <div class="section-header">
         <h2>历史任务</h2>
@@ -106,8 +130,8 @@
         <p class="history-empty">暂无历史任务</p>
       </div>
     </section>
-  </div>
 
+  </div>
   <script src="/static/app.js"></script>
 </body>
 </html>
